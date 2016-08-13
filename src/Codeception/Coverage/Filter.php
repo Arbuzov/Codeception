@@ -59,6 +59,13 @@ class Filter
         if (!isset($config['coverage'])) {
             return $this;
         }
+        if (
+            is_file('/tmp/'.md5(print_r($config, true)).'.CScache') &&
+            file_get_contents('/tmp/'.md5(print_r($config, true)).'.CScache') !=''
+            ) {
+            $this->filter=unserialize(file_get_contents('/tmp/'.md5(print_r($config, true)).'.CScache'));
+            return $this;
+        }
         $coverage = $config['coverage'];
         if (!isset($coverage['whitelist'])) {
             $coverage['whitelist'] = [];
@@ -93,6 +100,10 @@ class Filter
                 }
             }
         }
+        file_put_contents(
+            '/tmp/'.md5(print_r($config, true)).'.CScache',
+            serialize($this->filter)
+        );
         return $this;
     }
 
